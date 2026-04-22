@@ -1,0 +1,432 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Cairo', sans-serif;
+    background-color: #f8f9fa;
+    color: #212529;
+    line-height: 1.5;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ======= رأس الموقع ======= */
+.main-header {
+    background: linear-gradient(135deg, #2b7a3e 0%, #1e5e2f 100%);
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border-bottom: 3px solid #f4c542;
+}
+
+.header-content h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+}
+
+.header-content h1 i {
+    margin-left: 10px;
+    color: #f4c542;
+}
+
+.slogan {
+    font-size: 1rem;
+    background: rgba(0,0,0,0.2);
+    display: inline-block;
+    padding: 5px 15px;
+    border-radius: 30px;
+    margin-top: 5px;
+}
+
+/* ======= قسم السلات ======= */
+.baskets-section {
+    padding: 50px 0 40px;
+    background: #fff;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 40px;
+    color: #2b7a3e;
+}
+
+.section-title:after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 4px;
+    background: #f4c542;
+    margin: 10px auto 0;
+    border-radius: 5px;
+}
+
+.baskets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 30px;
+}
+
+.basket-card {
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    overflow: hidden;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: 1px solid #e9ecef;
+}
+
+.basket-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 30px rgba(0,0,0,0.1);
+}
+
+.basket-img {
+    background: #fef5e7;
+    padding: 25px 20px 15px;
+    font-size: 4rem;
+    color: #2b7a3e;
+}
+
+.basket-info {
+    padding: 20px 15px 25px;
+}
+
+.basket-info h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.basket-info p {
+    color: #6c757d;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+}
+
+.price {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #2b7a3e;
+    margin: 10px 0;
+}
+
+.btn-order {
+    background: #f4c542;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 40px;
+    font-weight: 700;
+    font-family: 'Cairo', sans-serif;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-order:hover {
+    background: #e0b13b;
+}
+
+/* ======= زر عائم أحمر ======= */
+.float-red-btn {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    background-color: #e63946;
+    color: white;
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    box-shadow: 0 6px 18px rgba(230,57,70,0.4);
+    cursor: pointer;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Cairo', sans-serif;
+}
+
+.float-red-btn:hover {
+    background-color: #c1121f;
+    transform: scale(1.03);
+}
+
+/* ======= الفوتر ======= */
+.footer {
+    background-color: #1e2a3e;
+    color: #ddd;
+    padding: 35px 0 25px;
+    margin-top: 50px;
+    border-top: 5px solid #f4c542;
+}
+
+.footer-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.footer-info h3 {
+    color: #f4c542;
+    margin-bottom: 8px;
+}
+
+.footer-social a {
+    color: #ddd;
+    margin: 0 8px;
+    font-size: 1.4rem;
+    transition: 0.2s;
+}
+
+.footer-social a:hover {
+    color: #f4c542;
+}
+
+.copyright {
+    text-align: center;
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid #33414e;
+    font-size: 0.8rem;
+}
+
+/* ======= النوافذ المنبثقة (مودال) ======= */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    max-width: 500px;
+    width: 90%;
+    border-radius: 28px;
+    padding: 25px;
+    text-align: center;
+    position: relative;
+    animation: fadeInUp 0.3s ease;
+}
+
+.warning-box {
+    background: #fff3cd;
+    border-right: 4px solid #ffc107;
+    padding: 12px;
+    border-radius: 10px;
+    margin: 15px 0;
+    color: #856404;
+    font-weight: bold;
+}
+
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.9rem;
+    resize: vertical;
+    margin: 10px 0;
+}
+
+.whatsapp-btn {
+    background: #25D366;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: 'Cairo', sans-serif;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sms-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: 'Cairo', sans-serif;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.close-modal {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .header-content h1 { font-size: 1.6rem; }
+    .float-red-btn { padding: 10px 20px; font-size: 1rem; left: 20px; bottom: 20px; }
+}
+/* ========================================================== */
+/* إضافات للوحة التحكم ولرابط المدير */
+.admin-link {
+    display: inline-block;
+    background: #2b7a3e;
+    color: white;
+    padding: 10px 25px;
+    border-radius: 40px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.admin-link:hover {
+    background: #1e5e2f;
+    transform: scale(1.05);
+}
+
+.loading {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #2b7a3e;
+    padding: 40px;
+}
+
+/* أنماط لوحة التحكم */
+.admin-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.admin-header {
+    background: #1e2a3e;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    border-radius: 15px;
+    margin-bottom: 30px;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 15px;
+    text-align: right;
+    border-bottom: 1px solid #ddd;
+}
+
+.admin-table th {
+    background: #2b7a3e;
+    color: white;
+    font-weight: bold;
+}
+
+.admin-table tr:hover {
+    background: #f5f5f5;
+}
+
+.edit-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: 'Cairo', sans-serif;
+}
+
+.edit-btn, .save-btn {
+    background: #f4c542;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 0 3px;
+}
+
+.save-btn {
+    background: #2b7a3e;
+    color: white;
+}
+
+.delete-btn {
+    background: #e63946;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.add-basket-form {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    margin-top: 30px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.add-basket-form input,
+.add-basket-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.success-msg {
+    background: #d4edda;
+    color: #155724;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 10px 0;
+    display: none;
+}

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تمونيات سامي - المواد الغذائية</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container header-content">
+            <h1><i class="fas fa-shopping-basket"></i> تمونيات سامي</h1>
+            <div class="slogan">أفضل المواد الغذائية بجودة عالية وأسعار منافسة</div>
+        </div>
+    </header>
+
+    <section class="baskets-section">
+        <div class="container">
+            <h2 class="section-title">اختر سلة غذائك المثالية</h2>
+            <div class="baskets-grid" id="basketsContainer">
+                <div class="loading">جاري تحميل السلات...</div>
+            </div>
+        </div>
+    </section>
+
+    <button class="float-red-btn" id="directOrderBtn">
+        <i class="fas fa-bolt"></i> طلب مباشر
+    </button>
+
+    <!-- رابط لوحة التحكم (أسفل الصفحة) -->
+    <div style="text-align: center; margin: 20px 0;">
+        <a href="admin.html" class="admin-link" target="_blank">
+            <i class="fas fa-cog"></i> لوحة تحكم المدير
+        </a>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h3><i class="fas fa-store"></i> تمونيات سامي</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> شارع السوق المركزي، بجوار مسجد النور</p>
+                    <p><i class="fas fa-phone-alt"></i> +966 50 123 4567</p>
+                    <p><i class="far fa-clock"></i> السبت - الخميس: 8 ص - 11 م</p>
+                </div>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="copyright">© 2025 تمونيات سامي. جميع الحقوق محفوظة.</div>
+        </div>
+    </footer>
+
+    <!-- نافذة طلب السلة -->
+    <div id="basketModal" class="modal">
+        <div class="modal-content">
+            <i class="fas fa-shopping-basket" style="font-size: 2.5rem; color: #2b7a3e;"></i>
+            <h3>طلب سلة</h3>
+            <p id="basketNameDisplay" style="font-weight: bold; margin: 10px 0;"></p>
+            <div style="display: flex; gap: 12px; justify-content: center; margin-top: 15px; flex-wrap: wrap;">
+                <button id="basketWhatsappBtn" class="whatsapp-btn"><i class="fab fa-whatsapp"></i> واتساب</button>
+                <button id="basketSmsBtn" class="sms-btn"><i class="fas fa-sms"></i> SMS</button>
+            </div>
+            <button class="close-modal">إغلاق</button>
+        </div>
+    </div>
+
+    <!-- نافذة طلب مباشر -->
+    <div id="directModal" class="modal">
+        <div class="modal-content">
+            <i class="fas fa-bolt" style="font-size: 2.5rem; color: #e63946;"></i>
+            <h3 style="color: #e63946;">طلب مباشر</h3>
+            <div class="warning-box">
+                <i class="fas fa-exclamation-triangle"></i> تأكد أن قيمة الطلب 3000 فأكثر لتوصيل الطلب
+            </div>
+            <textarea id="directOrderDetails" rows="4" placeholder="اكتب تفاصيل طلبك: المواد، الكمية، العنوان، رقم الهاتف..."></textarea>
+            <div style="display: flex; gap: 12px; justify-content: center; margin-top: 15px; flex-wrap: wrap;">
+                <button id="directWhatsappBtn" class="whatsapp-btn"><i class="fab fa-whatsapp"></i> واتساب</button>
+                <button id="directSmsBtn" class="sms-btn"><i class="fas fa-sms"></i> SMS</button>
+            </div>
+            <button class="close-modal">إغلاق</button>
+        </div>
+    </div>
+
+     <script src="config.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

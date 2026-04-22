@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - تمونيات سامي</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body { background: #f0f2f5; }
+        .back-link { display: inline-block; margin: 20px; color: #2b7a3e; text-decoration: none; }
+        .status-bar {
+            background: #fff;
+            padding: 10px 20px;
+            margin: 10px 20px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .connected { color: #2b7a3e; font-weight: bold; }
+        .disconnected { color: #e63946; }
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #2b7a3e;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .btn-save-all {
+            background: #2b7a3e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px;
+        }
+        .btn-save-all:hover { background: #1e5e2f; }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link"><i class="fas fa-arrow-right"></i> العودة للموقع</a>
+    
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1><i class="fas fa-cog"></i> لوحة تحكم المدير</h1>
+            <p>إدارة السلات الغذائية - التعديلات تحفظ مباشرة على GitHub</p>
+        </div>
+
+        <div class="status-bar">
+            <span id="connectionStatus">
+                <i class="fas fa-spinner fa-spin"></i> جاري الاتصال بـ GitHub...
+            </span>
+            <button id="refreshBtn" class="edit-btn"><i class="fas fa-sync-alt"></i> تحديث البيانات</button>
+        </div>
+
+        <div id="successMsg" class="success-msg"></div>
+        <div id="errorMsg" style="background:#f8d7da; color:#721c24; padding:10px; border-radius:8px; margin:10px 0; display:none;"></div>
+
+        <table class="admin-table" id="basketsTable">
+            <thead>
+                <tr><th>#</th><th>اسم السلة</th><th>الوصف</th><th>السعر</th><th>الأيقونة</th><th>الإجراءات</th></tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+
+        <div class="add-basket-form">
+            <h3><i class="fas fa-plus-circle"></i> إضافة سلة جديدة</h3>
+            <input type="text" id="newName" placeholder="اسم السلة">
+            <textarea id="newDesc" placeholder="وصف السلة"></textarea>
+            <input type="text" id="newPrice" placeholder="السعر (مثال: 29.99)">
+            <input type="text" id="newIcon" placeholder="أيقونة FontAwesome (مثال: fa-basket-shopping)">
+            <button id="addBasketBtn" class="save-btn"><i class="fas fa-save"></i> إضافة السلة</button>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        let currentBaskets = [];
+        let currentSha = null; // لحفظ SHA للملف للتحديث
+
+        // عرض رسالة
+        function showMessage(msg, isError = false) {
+            const msgDiv = isError ? document.getElementById('errorMsg') : document.getElementById('successMsg');
+            if (isError) {
+                msgDiv.innerText = msg;
+                msgDiv.style.display = 'block';
+                setTimeout(() => { msgDiv.style.display = 'none'; }, 5000);
+            } else {
+                msgDiv.innerText = msg;
+                msgDiv.style.display = 'block';
+                setTimeout(() => { msgDiv.style.display = 'none'; }, 3000);
+            }
+        }
+
+
+// جلب البيانات من GitHub مع معالجة الترميز العربي
+async function fetchFromGitHub() {
+    try {
+        const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}?ref=${GITHUB_CONFIG.branch}`;
+        const response = await fetch(url, {
+            headers: {
+                'Authorization': `token ${GITHUB_CONFIG.token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('فشل جلب البيانات من GitHub');
+        
+        const data = await response.json();
+        currentSha = data.sha;
+        
+        // المعالجة الصحيحة للترميز العربي
+        const binaryString = atob(data.content);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+        const decodedText = new TextDecoder('utf-8').decode(bytes);
+        const jsonData = JSON.parse(decodedText);
+        currentBaskets = jsonData.baskets;
+        
+        document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-check-circle connected"></i> متصل بـ GitHub بنجاح';
+        renderTable();
+        return true;
+    } catch (error) {
+        console.error(error);
+        document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-times-circle disconnected"></i> فشل الاتصال بـ GitHub';
+        showMessage('خطأ في الاتصال بـ GitHub: ' + error.message, true);
+        return false;
+    }
+}
+ 
+// حفظ البيانات إلى GitHub مع معالجة الترميز
+async function saveToGitHub() {
+    try {
+        const data = { baskets: currentBaskets };
+        // تحويل النص إلى UTF-8 base64 بشكل صحيح
+        const jsonString = JSON.stringify(data, null, 2);
+        const utf8Bytes = new TextEncoder().encode(jsonString);
+        let binaryString = '';
+        utf8Bytes.forEach(byte => {
+            binaryString += String.fromCharCode(byte);
+        });
+        const content = btoa(binaryString);
+        
+        const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `token ${GITHUB_CONFIG.token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: `تحديث السلات - ${new Date().toLocaleString('ar-SA')}`,
+                content: content,
+                sha: currentSha,
+                branch: GITHUB_CONFIG.branch
+            })
+        });
+        
+        if (!response.ok) throw new Error('فشل حفظ البيانات في GitHub');
+        
+        const result = await response.json();
+        currentSha = result.content.sha;
+        showMessage('تم حفظ التغييرات بنجاح على GitHub');
+        return true;
+    } catch (error) {
+        showMessage('خطأ في الحفظ: ' + error.message, true);
+        return false;
+    }
+}
+ // عرض الجدول
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            currentBaskets.forEach((basket) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${basket.id}</td>
+                    <td><input type="text" class="edit-input" value="${escapeHtml(basket.name)}" id="name_${basket.id}"></td>
+                    <td><input type="text" class="edit-input" value="${escapeHtml(basket.desc)}" id="desc_${basket.id}"></td>
+                    <td><input type="text" class="edit-input" value="${basket.price}" id="price_${basket.id}"></td>
+                    <td><input type="text" class="edit-input" value="${basket.icon}" id="icon_${basket.id}"></td>
+                    <td>
+                        <button class="save-btn" onclick="updateBasket(${basket.id})"><i class="fas fa-save"></i> حفظ</button>
+                        <button class="delete-btn" onclick="deleteBasket(${basket.id})"><i class="fas fa-trash"></i> حذف</button>
+                    </td>
+                `;
+            });
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // تحديث سلة
+        window.updateBasket = async function(id) {
+            const newName = document.getElementById(`name_${id}`).value;
+            const newDesc = document.getElementById(`desc_${id}`).value;
+            const newPrice = document.getElementById(`price_${id}`).value;
+            const newIcon = document.getElementById(`icon_${id}`).value;
+            
+            const index = currentBaskets.findIndex(b => b.id === id);
+            if (index !== -1) {
+                currentBaskets[index] = { 
+                    ...currentBaskets[index], 
+                    name: newName, 
+                    desc: newDesc, 
+                    price: newPrice, 
+                    icon: newIcon 
+                };
+                await saveToGitHub();
+                renderTable();
+            }
+        };
+
+        // حذف سلة
+        window.deleteBasket = async function(id) {
+            if (confirm('هل أنت متأكد من حذف هذه السلة؟')) {
+                currentBaskets = currentBaskets.filter(b => b.id !== id);
+                await saveToGitHub();
+                renderTable();
+                showMessage('تم حذف السلة بنجاح');
+            }
+        };
+
+        // إضافة سلة جديدة
+        document.getElementById('addBasketBtn').onclick = async () => {
+            const newName = document.getElementById('newName').value;
+            const newDesc = document.getElementById('newDesc').value;
+            const newPrice = document.getElementById('newPrice').value;
+            const newIcon = document.getElementById('newIcon').value;
+            
+            if (!newName || !newPrice) {
+                alert('الرجاء إدخال اسم السلة والسعر');
+                return;
+            }
+            
+            const newId = Math.max(...currentBaskets.map(b => b.id), 0) + 1;
+            const newBasket = {
+                id: newId,
+                name: newName,
+                desc: newDesc || 'لا يوجد وصف',
+                price: newPrice,
+                icon: newIcon || 'fa-shopping-basket'
+            };
+            currentBaskets.push(newBasket);
+            await saveToGitHub();
+            showMessage('تمت إضافة السلة بنجاح');
+            
+            // تفريغ الحقول
+            document.getElementById('newName').value = '';
+            document.getElementById('newDesc').value = '';
+            document.getElementById('newPrice').value = '';
+            document.getElementById('newIcon').value = '';
+            renderTable();
+        };
+
+        // تحديث البيانات من GitHub
+        document.getElementById('refreshBtn').onclick = async () => {
+            await fetchFromGitHub();
+        };
+
+        // تحميل البيانات عند فتح الصفحة
+        fetchFromGitHub();
+    </script>
+</body>
+</html>
