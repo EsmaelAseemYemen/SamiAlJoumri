@@ -4,47 +4,65 @@ const STORE_PHONE = "967777279137";
 let basketsData = []; // سيتم تعبئتها من JSON
 
 
-// جلب البيانات من GitHub API مع معالجة الترميز العربي
+// // جلب البيانات من GitHub API مع معالجة الترميز العربي
+// async function loadBaskets() {
+//     try {
+//         // محاولة جلب البيانات من GitHub أولاً
+//         const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}?ref=${GITHUB_CONFIG.branch}`;
+//         const response = await fetch(url, {
+//             headers: {
+//                 'Authorization': `token ${GITHUB_CONFIG.token}`,
+//                 'Accept': 'application/vnd.github.v3+json'
+//             }
+//         });
+        
+//         if (response.ok) {
+//             const data = await response.json();
+//             // المعالجة الصحيحة للترميز العربي
+//             const binaryString = atob(data.content);
+//             const bytes = new Uint8Array(binaryString.length);
+//             for (let i = 0; i < binaryString.length; i++) {
+//                 bytes[i] = binaryString.charCodeAt(i);
+//             }
+//             const decodedText = new TextDecoder('utf-8').decode(bytes);
+//             const jsonData = JSON.parse(decodedText);
+//             basketsData = jsonData.baskets;
+//         } else {
+//             // fallback للملف المحلي
+//             const localResponse = await fetch('baskets.json');
+//             const localData = await localResponse.json();
+//             basketsData = localData.baskets;
+//         }
+//         renderBaskets();
+//     } catch (error) {
+//         console.error('خطأ في تحميل البيانات:', error);
+//         // محاولة تحميل من الملف المحلي كحل احتياطي
+//         try {
+//             const response = await fetch('baskets.json');
+//             const data = await response.json();
+//             basketsData = data.baskets;
+//             renderBaskets();
+//         } catch (e) {
+//             document.getElementById('basketsContainer').innerHTML = '<div class="loading">حدث خطأ في تحميل السلات</div>';
+//         }
+//     }
+// }
 async function loadBaskets() {
     try {
-        // محاولة جلب البيانات من GitHub أولاً
-        const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}?ref=${GITHUB_CONFIG.branch}`;
-        const response = await fetch(url, {
-            headers: {
-                'Authorization': `token ${GITHUB_CONFIG.token}`,
-                'Accept': 'application/vnd.github.v3+json'
-            }
-        });
+        // استخدام الرابط المباشر للملف الخام من GitHub
+        const rawUrl = `https://raw.githubusercontent.com/EsmaelAseemYemen/sami/refs/heads/main/data.json`;
+        const response = await fetch(rawUrl);
         
-        if (response.ok) {
-            const data = await response.json();
-            // المعالجة الصحيحة للترميز العربي
-            const binaryString = atob(data.content);
-            const bytes = new Uint8Array(binaryString.length);
-            for (let i = 0; i < binaryString.length; i++) {
-                bytes[i] = binaryString.charCodeAt(i);
-            }
-            const decodedText = new TextDecoder('utf-8').decode(bytes);
-            const jsonData = JSON.parse(decodedText);
-            basketsData = jsonData.baskets;
-        } else {
-            // fallback للملف المحلي
-            const localResponse = await fetch('baskets.json');
-            const localData = await localResponse.json();
-            basketsData = localData.baskets;
+        if (!response.ok) {
+            throw new Error('فشل تحميل البيانات');
         }
+        
+        const data = await response.json();
+        basketsData = data.baskets;
         renderBaskets();
     } catch (error) {
-        console.error('خطأ في تحميل البيانات:', error);
-        // محاولة تحميل من الملف المحلي كحل احتياطي
-        try {
-            const response = await fetch('baskets.json');
-            const data = await response.json();
-            basketsData = data.baskets;
-            renderBaskets();
-        } catch (e) {
-            document.getElementById('basketsContainer').innerHTML = '<div class="loading">حدث خطأ في تحميل السلات</div>';
-        }
+        console.error('خطأ:', error);
+        document.getElementById('basketsContainer').innerHTML = '<div class="loading">حدث خطأ في تحميل السلات</div>';
     }
 }
 // عرض السلات في الصفحة
